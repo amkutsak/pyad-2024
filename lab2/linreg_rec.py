@@ -4,7 +4,10 @@ import nltk
 import pandas as pd
 import sklearn
 import string
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
@@ -18,6 +21,18 @@ from sklearn.preprocessing import StandardScaler
 nltk.download("stopwords")
 nltk.download("punkt")
 nltk.download('punkt_tab')
+<<<<<<< Updated upstream
+=======
+
+import pickle
+
+def save_preprocessors(tfidf: TfidfVectorizer, scaler: StandardScaler):
+    with open("tfidf.pkl", "wb") as tfidf_file:
+        pickle.dump(tfidf, tfidf_file)
+
+    with open("scaler.pkl", "wb") as scaler_file:
+        pickle.dump(scaler, scaler_file)
+>>>>>>> Stashed changes
 
 import pickle
 
@@ -94,6 +109,11 @@ def title_preprocessing(text: str) -> str:
     processed_text = " ".join(tokens)
     
     return processed_text
+<<<<<<< Updated upstream
+=======
+
+
+>>>>>>> Stashed changes
 def modeling(books: pd.DataFrame, ratings: pd.DataFrame) -> None:
     books["Processed-Title"] = books["Book-Title"].apply(title_preprocessing)
 
@@ -135,3 +155,7 @@ if __name__ == "__main__":
     books = books_preprocessing(books)
     ratings = preprocess_ratings(ratings)
     modeling(books, ratings)
+<<<<<<< Updated upstream
+=======
+    
+>>>>>>> Stashed changes

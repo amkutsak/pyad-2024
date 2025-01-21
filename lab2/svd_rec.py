@@ -12,6 +12,13 @@ def preprocess_ratings(ratings: pd.DataFrame) -> pd.DataFrame:
     valid_users = ratings["User-ID"].value_counts()[lambda x: x >= 1].index
     valid_books = ratings["ISBN"].value_counts()[lambda x: x >= 1].index
     ratings = ratings[ratings["User-ID"].isin(valid_users) & ratings["ISBN"].isin(valid_books)]
+<<<<<<< Updated upstream
+=======
+
+    ratings = ratings.drop_duplicates()
+    ratings.dropna(inplace=True)
+    return ratings
+>>>>>>> Stashed changes
 
     ratings = ratings.drop_duplicates()
     ratings.dropna(inplace=True)
