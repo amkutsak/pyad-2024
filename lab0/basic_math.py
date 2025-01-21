@@ -12,15 +12,15 @@ def matrix_multiplication(matrix_a, matrix_b):
     if cols_a != rows_b:
         raise ValueError("Число столбцов первой матрицы должно совпадать с числом строк второй матрицы.")
 
-    result = [[0 for _ in range(cols_b)] for _ in range(rows_a)]
-
+    result = [[0] * cols_b for _ in range(rows_a)]
     for i in range(rows_a):
         for j in range(cols_b):
             for k in range(cols_a):
                 result[i][j] += matrix_a[i][k] * matrix_b[k][j]
     return result
-    pass
 
+def quadratic_equation(x: float, a: list[float]) -> float:
+  return a[0] * x**2 + a[1] * x + a[2]
 
 def functions(a_1, a_2):
     """
@@ -28,23 +28,41 @@ def functions(a_1, a_2):
     Необходимо найти точки экстремума функции и определить, есть ли у функций общие решения.
     Вернуть нужно координаты найденных решения списком, если они есть. None, если их бесконечно много.
     """
-    from sympy import symbols, diff, solve
+    coeffs1 = list(map(float, a_1.split()))
+    coeffs2 = list(map(float, a_2.split()))
 
-    x = symbols('x')
-    
-    func1 = sum(coef * x**i for i, coef in enumerate(reversed(a_1)))
-    func2 = sum(coef * x**i for i, coef in enumerate(reversed(a_2)))
+    f_extr_result = sc.optimize.minimize_scalar(quadratic_equation, args=(coeffs1))
+    p_extr_result = sc.optimize.minimize_scalar(quadratic_equation, args=(coeffs2))
 
-    extrema_func1 = solve(diff(func1, x), x)
-    common_solutions = solve(func1 - func2, x)
+    print(f"Function F(x) estimated point of extremum is x_extr = {f_extr_result.x}. F(x_extr) = {f_extr_result.fun}")
+    print(f"Function P(x) estimated point of extremum is x_extr = {p_extr_result.x}. F(x_extr) = {p_extr_result.fun}")
 
-    if len(common_solutions) == 0:
-        return []  # Нет общих решений
-    elif len(common_solutions) > 1 and all(isinstance(sol, bool) for sol in common_solutions):
-        return None  # Общих решений бесконечно много
+    a, b, c  = [coeffs1[i] - coeffs2[i] for i in [0, 1, 2]]
 
-    return list(map(float, common_solutions))
-    pass
+    d = b ** 2 - 4 * a * c
+
+    if a == 0 and b == 0 and c == 0:
+        return None
+    elif a == 0 and b == 0:
+        return []
+    elif a == 0:
+        return [(-c/b, quadratic_equation(-c/b, coeffs1))]
+    else:
+        if d < 0:
+            return []
+        elif d == 0:
+            return[(-b / (2 * a), quadratic_equation(-b / (2 * a), coeffs1))]
+        else:
+            return[((-b + d**0.5) / (2 * a), quadratic_equation((-b + d**0.5) / (2 * a), coeffs1)),
+                    ((-b - d**0.5) / (2 * a), quadratic_equation((-b - d**0.5) / (2 * a), coeffs1))]
+
+
+def sample_mean(sample):
+    return sum(sample) / len(sample)
+
+def moment(sample, n):
+    mean = sample_mean(sample)
+    return sum((x - mean) ** n for x in sample) / len(sample)
 
 
 def skew(x):
@@ -52,10 +70,7 @@ def skew(x):
     Задание 3. Функция для расчета коэффициента асимметрии.
     Необходимо вернуть значение коэффициента асимметрии, округленное до 2 знаков после запятой.
     """
-    from scipy.stats import skew as scipy_skew
-
-    return round(scipy_skew(x), 2)
-    pass
+    return round(moment(x, 3) / moment(x, 2) ** (3 / 2), 2)
 
 
 def kurtosis(x):
@@ -63,7 +78,4 @@ def kurtosis(x):
     Задание 3. Функция для расчета коэффициента эксцесса.
     Необходимо вернуть значение коэффициента эксцесса, округленное до 2 знаков после запятой.
     """
-    rom scipy.stats import kurtosis as scipy_kurtosis
-
-    return round(scipy_kurtosis(x, fisher=True), 2)
-    pass
+    return round(moment(x, 4) / moment(x, 2) ** 2 - 3, 2)
